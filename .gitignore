@@ -1,0 +1,20 @@
+# Dependencies
+node_modules/
+
+# Local environment variables
+.env
+
+# Logs
+*.log
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Editor-specific files
+.idea/
+.vscode/
+*.swp
+
+# Package lock file (optional, if you don't want to commit it)
+package-lock.json
