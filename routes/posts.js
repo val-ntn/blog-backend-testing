@@ -4,13 +4,13 @@ const Post = require('../models/Post');
 
 // Create a new post (POST request)
 router.post('/', async (req, res) => {
-  const { title, content } = req.body;
+  const { title, content, author, category, tags, thumbnailURL, externalLinks } = req.body;
   if(!title || !content){
     return res.status(400).send("Title and content required");
   }
   
   try {
-    const newPost = new Post({ title, content });
+    const newPost = new Post({ title, content, author, category, tags, thumbnailURL, externalLinks });
     await newPost.save();
     res.status(201).send(newPost);
   } catch (err) {
@@ -45,14 +45,14 @@ router.get('/:id', async (req,res) => {
 
 router.put('/:id', async (req, res) => {
   try {
-    const { title, content } = req.body;
+    const { title, content, author, category, tags, thumbnailURL, externalLinks } = req.body;
     if(!title || !content) {
       return res.status(400).json({ error: 'Title and content are required'});
     }
 
     const updatedPost = await Post.findByIdAndUpdate(
       req.params.id,
-      { title, content },
+      { title, content, author, category, tags, thumbnailURL, externalLinks },
       { new: true, runValidators: true }
     );
     if(!updatedPost){
@@ -64,4 +64,20 @@ router.put('/:id', async (req, res) => {
     res.status(500).json({ error: 'Error updating post: ' + err.message});
   }
 });
+// Delete a post by ID (DELETE request)
+router.delete('/:id', async (req, res) => {
+  try {
+    const postId = req.params.id;
+    const deletedPost = await Post.findByIdAndDelete(postId);
+
+    if (!deletedPost) {
+      return res.status(404).json({ error: 'Post not found' });
+    }
+
+    res.status(200).json({ message: 'Post deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ error: 'Error deleting post: ' + err.message });
+  }
+});
+
 module.exports = router;
