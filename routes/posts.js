@@ -1,3 +1,5 @@
+//posts.js
+
 const express = require('express');
 const router = express.Router();
 const Post = require('../models/Post');
@@ -14,8 +16,10 @@ router.post('/', async (req, res) => {
     await newPost.save();
     res.status(201).send(newPost);
   } catch (err) {
-    res.status(400).send('Error creating post');
+    console.error('Post creation error:', err.message);
+    res.status(400).json({ error: 'Error creating post', details: err.message });
   }
+  
 });
 
 // Get all posts (GET request)

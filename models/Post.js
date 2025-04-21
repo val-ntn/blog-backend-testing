@@ -1,3 +1,4 @@
+//Post.js
 const mongoose = require('mongoose');
 
 // Define the Post schema

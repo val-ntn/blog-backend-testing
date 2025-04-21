@@ -1,8 +1,11 @@
+//server.js
 // Import necessary dependencies
 const express = require('express');
 const mongoose = require('mongoose');
 const socketIo = require('socket.io');
 const http = require('http');
+const cors = require('cors');
+
 require('dotenv').config();
 
 
@@ -13,6 +16,8 @@ const io = socketIo(server);
 
 // Middleware to parse JSON bodies
 app.use(express.json());
+app.use(cors());
+
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI)
