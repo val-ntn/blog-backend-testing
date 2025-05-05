@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const socketIo = require('socket.io');
 const http = require('http');
 const cors = require('cors');
+const userRoutes = require('./routes/users');
 
 require('dotenv').config();
 
@@ -17,7 +18,7 @@ const io = socketIo(server);
 // Middleware to parse JSON bodies
 app.use(express.json());
 app.use(cors());
-
+app.use('/api/users', userRoutes); // Add this line to enable user routes
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI)
