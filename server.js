@@ -6,6 +6,7 @@ const socketIo = require('socket.io');
 const http = require('http');
 const cors = require('cors');
 const userRoutes = require('./routes/users');
+const eventRoutes = require('./routes/events');
 
 require('dotenv').config();
 
@@ -19,7 +20,7 @@ const io = socketIo(server);
 app.use(express.json());
 app.use(cors());
 app.use('/api/users', userRoutes); // Add this line to enable user routes
-
+app.use('/api/events', eventRoutes);
 // Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('Connected to MongoDB'))
