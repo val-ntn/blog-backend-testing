@@ -9,6 +9,9 @@ import userRoutes from './routes/users.js';
 import eventRoutes from './routes/events.js';
 import postRoutes from './routes/posts.js';
 import dotenv from 'dotenv';
+import authRoutes from './routes/auth.js';
+import cookieParser from 'cookie-parser';
+import adminRoutes from './routes/admin.js';
 
 // Load environment variables from .env file into process.env
 dotenv.config();
@@ -25,8 +28,17 @@ const io = new SocketIO(server);
 // Middleware to parse incoming JSON payloads in request bodies
 app.use(express.json());
 
+// Parse cookies from incoming requests for easy access
+app.use(cookieParser());
+
 // Enable CORS for all origins (adjust in production for security)
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:5173',  // your React frontend URL
+  credentials: true,                // allow cookies with cross-origin requests
+}));
+
+// Handle authentication routes (e.g., login)
+app.use('/api/auth', authRoutes);
 
 // Mount user-related routes on /api/users path
 app.use('/api/users', userRoutes);
@@ -36,6 +48,10 @@ app.use('/api/events', eventRoutes);
 
 // Mount post-related routes on /api/posts path
 app.use('/api/posts', postRoutes);
+
+// ... other app.use lines
+app.use('/api/admin', adminRoutes);
+
 
 // Connect to MongoDB using the connection string from environment variables
 mongoose.connect(process.env.MONGODB_URI)
