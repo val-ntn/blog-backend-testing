@@ -1,16 +1,21 @@
 // routes/users.js
-const express = require('express');
-const router = express.Router();
-const User = require('../models/User');
+import express from 'express';
+import User from '../models/User.js';
 
-// Get all users (this will be used in the dashboard)
+const router = express.Router();
+
+// GET all users — typically used in admin dashboard to list users
 router.get('/', async (req, res) => {
   try {
+    // Query the database to find all user documents
     const users = await User.find();
-    res.json(users);  // This will return all users in the database
+    // Send the list of users as JSON response
+    res.json(users);
   } catch (err) {
+    // If an error occurs during the query, respond with HTTP 500 and error message
     res.status(500).json({ error: 'Failed to fetch users' });
   }
 });
 
-module.exports = router;
+export default router;
+

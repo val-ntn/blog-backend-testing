@@ -1,51 +1,62 @@
 //server.js
 // Import necessary dependencies
-const express = require('express');
-const mongoose = require('mongoose');
-const socketIo = require('socket.io');
-const http = require('http');
-const cors = require('cors');
-const userRoutes = require('./routes/users');
-const eventRoutes = require('./routes/events');
+import express from 'express';
+import mongoose from 'mongoose';
+import { Server as SocketIO } from 'socket.io';
+import http from 'http';
+import cors from 'cors';
+import userRoutes from './routes/users.js';
+import eventRoutes from './routes/events.js';
+import postRoutes from './routes/posts.js';
+import dotenv from 'dotenv';
 
-require('dotenv').config();
+// Load environment variables from .env file into process.env
+dotenv.config();
 
-
-// Initialize app and server
+// Initialize the Express app
 const app = express();
+
+// Create a HTTP server based on the Express app
 const server = http.createServer(app);
-const io = socketIo(server);
 
-// Middleware to parse JSON bodies
+// Initialize Socket.IO server instance on top of the HTTP server
+const io = new SocketIO(server);
+
+// Middleware to parse incoming JSON payloads in request bodies
 app.use(express.json());
+
+// Enable CORS for all origins (adjust in production for security)
 app.use(cors());
-app.use('/api/users', userRoutes); // Add this line to enable user routes
+
+// Mount user-related routes on /api/users path
+app.use('/api/users', userRoutes);
+
+// Mount event-related routes on /api/events path
 app.use('/api/events', eventRoutes);
-// Connect to MongoDB
+
+// Mount post-related routes on /api/posts path
+app.use('/api/posts', postRoutes);
+
+// Connect to MongoDB using the connection string from environment variables
 mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log('Connected to MongoDB'))
-  .catch((err) => console.log('Failed to connect to MongoDB:', err));
+  .then(() => console.log('Connected to MongoDB'))  // Success message
+  .catch((err) => console.log('Failed to connect to MongoDB:', err)); // Error handling
 
-
-// Import and use the routes for posts
-const postRoutes = require('./routes/posts');
-app.use('/api/posts', postRoutes);  // This will route any requests to /api/posts to the 'posts' routes
-  
-
-// Example API route (you can expand this later)
+// Simple root route to verify server is running
 app.get('/', (req, res) => {
   res.send('Hello, this is your blog API!');
 });
 
-// Server and socket setup
+// Setup WebSocket connection listeners
 io.on('connection', (socket) => {
-  console.log('A user connected');
+  console.log('A user connected');  // Log when a user connects
+
   socket.on('disconnect', () => {
-    console.log('A user disconnected');
+    console.log('A user disconnected');  // Log when a user disconnects
   });
 });
 
-// Start the server on port 5000
+// Start the HTTP server on port 5000 and log startup message
 server.listen(5000, () => {
   console.log('Server running on port 5000');
 });
