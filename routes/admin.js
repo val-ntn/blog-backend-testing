@@ -1,16 +1,13 @@
 // routes/admin.js
 import express from 'express';
-import { verifyToken } from '../middleware/authMiddleware.js';
+import { verifyToken, requireRole } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-// Example protected route - Admin dashboard data
-router.get('/dashboard', verifyToken, (req, res) => {
-  if (req.user.role !== 'admin') {
-    return res.status(403).json({ message: 'Access denied, admins only' });
-  }
-
+// Cleaner and reusable: only admin can access this route
+router.get('/dashboard', verifyToken, requireRole('admin'), (req, res) => {
   res.json({ message: 'Welcome to the admin dashboard!' });
 });
 
 export default router;
+

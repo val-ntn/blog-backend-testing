@@ -2,24 +2,32 @@
 import jwt from 'jsonwebtoken';
 
 export const verifyToken = (req, res, next) => {
-  const token = req.cookies.token; // read token from cookie named "token"
+  const token = req.cookies.token;
 
   if (!token) {
     return res.status(401).json({ message: 'No token, authorization denied' });
   }
 
   try {
-    // verify token and get payload
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-    // attach user info to request object
-    req.user = {
-      id: decoded.id,
-      role: decoded.role,
-    };
-
-    next(); // proceed to the next middleware/route handler
+    req.user = { id: decoded.id, role: decoded.role };
+    next();
   } catch (err) {
     return res.status(401).json({ message: 'Token is not valid' });
   }
+};
+
+// NEW: middleware to restrict by role
+export const requireRole = (role) => {
+  return (req, res, next) => {
+    if (!req.user) {
+      return res.status(401).json({ message: 'Not authenticated' });
+    }
+
+    if (req.user.role !== role) {
+      return res.status(403).json({ message: 'Forbidden: insufficient privileges' });
+    }
+
+    next();
+  };
 };
