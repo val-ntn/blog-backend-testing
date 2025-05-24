@@ -35,4 +35,16 @@ router.post('/login', async (req, res) => {
   }
 });
 
+// Logout Route+
+
+router.post('/logout', (req, res) => {
+  res
+    .clearCookie('token', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',  // match your login cookie settings
+    })
+    .json({ message: 'Logged out successfully' });
+});
+
 export default router;
