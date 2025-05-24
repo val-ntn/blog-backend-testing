@@ -13,6 +13,8 @@ import authRoutes from './routes/auth.js';
 import cookieParser from 'cookie-parser';
 import adminRoutes from './routes/admin.js';
 
+
+
 // Load environment variables from .env file into process.env
 dotenv.config();
 

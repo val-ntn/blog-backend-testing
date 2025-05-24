@@ -2,11 +2,13 @@
 
 import express from 'express';
 import Post from '../models/Post.js';
+import { verifyToken, requireRole } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
+
 // Create a new post (POST request)
-router.post('/', async (req, res) => {
+router.post('/', verifyToken, requireRole('admin'), async (req, res) => {
   // Destructure fields from request body
   const { title, content, author, category, tags, thumbnailURL, externalLinks } = req.body;
 
@@ -35,7 +37,7 @@ router.post('/', async (req, res) => {
 router.get('/', async (req, res) => {
   try {
     // Find all posts and sort them by createdAt descending (newest first)
-    const posts = await Post.find().sort({ createdAt: -1 });
+    const posts = await Post.find({ deleted: false }).sort({ createdAt: -1 });
 
     // Respond with the array of posts as JSON
     res.status(200).json(posts);
@@ -64,7 +66,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // Update a post by ID (PUT request)
-router.put('/:id', async (req, res) => {
+router.put('/:id', verifyToken, requireRole('admin'), async (req, res) => {
   try {
     const { title, content, author, category, tags, thumbnailURL, externalLinks } = req.body;
 
@@ -93,20 +95,18 @@ router.put('/:id', async (req, res) => {
 });
 
 // Delete a post by ID (DELETE request)
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', verifyToken, requireRole('admin'), async (req, res) => {
   try {
     const postId = req.params.id;
 
-    // Find post by ID and delete it from the database
-    const deletedPost = await Post.findByIdAndDelete(postId);
+    // Soft delete by setting deleted = true
+    const deletedPost = await Post.findByIdAndUpdate(postId, { deleted: true }, { new: true });
 
-    // If no post was found to delete, respond with 404
     if (!deletedPost) {
       return res.status(404).json({ error: 'Post not found' });
     }
 
-    // Respond with success message
-    res.status(200).json({ message: 'Post deleted successfully' });
+    res.status(200).json({ message: 'Post deleted (soft) successfully' });
   } catch (err) {
     res.status(500).json({ error: 'Error deleting post: ' + err.message });
   }

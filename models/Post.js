@@ -29,6 +29,10 @@ const postSchema = new mongoose.Schema({
   thumbnailURL: { 
     type: String  // URL string for a thumbnail image (optional)
   },
+  deleted: {
+    type: Boolean,
+    default: false,
+  },
   externalLinks: [{ 
     type: String  // Array of external URLs (optional)
   }]
