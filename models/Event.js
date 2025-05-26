@@ -41,6 +41,10 @@ const eventSchema = new mongoose.Schema({
   relatedPostId: { 
     type: mongoose.Schema.Types.ObjectId,  // Reference to related Post document (optional)
     ref: 'Post'  
+  }, 
+  deleted: {
+    type: Boolean,
+    default: false
   }
 }, { 
   timestamps: true  // Automatically add createdAt and updatedAt fields
