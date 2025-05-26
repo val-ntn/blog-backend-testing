@@ -47,6 +47,16 @@ router.get('/', async (req, res) => {
   }
 });
 
+// Get all soft-deleted posts
+router.get('/bin', verifyToken, requireRole('admin'), async (req, res) => {
+  try {
+    const deletedPosts = await Post.find({ deleted: true }).sort({ createdAt: -1 });
+    res.status(200).json(deletedPosts);
+  } catch (err) {
+    res.status(500).json({ error: 'Error fetching deleted posts: ' + err.message });
+  }
+});
+
 // Get a single post by ID
 router.get('/:id', async (req, res) => {
   try {
@@ -111,5 +121,42 @@ router.delete('/:id', verifyToken, requireRole('admin'), async (req, res) => {
     res.status(500).json({ error: 'Error deleting post: ' + err.message });
   }
 });
+
+// Restore soft-deleted post
+router.patch('/restore/:id', verifyToken, requireRole('admin'), async (req, res) => {
+  try {
+    const restoredPost = await Post.findByIdAndUpdate(req.params.id, { deleted: false }, { new: true });
+    if (!restoredPost) {
+      return res.status(404).json({ error: 'Post not found' });
+    }
+    res.status(200).json({ message: 'Post restored successfully' });
+  } catch (err) {
+    res.status(500).json({ error: 'Error restoring post: ' + err.message });
+  }
+});
+
+// Permanently delete a post
+router.delete('/hard/:id', verifyToken, requireRole('admin'), async (req, res) => {
+  try {
+    const result = await Post.findByIdAndDelete(req.params.id);
+    if (!result) {
+      return res.status(404).json({ error: 'Post not found' });
+    }
+    res.status(200).json({ message: 'Post permanently deleted' });
+  } catch (err) {
+    res.status(500).json({ error: 'Error permanently deleting post: ' + err.message });
+  }
+});
+
+// Get all soft-deleted posts - ADMIN ONLY
+router.get('/bin', verifyToken, requireRole('admin'), async (req, res) => {
+  try {
+    const deletedPosts = await Post.find({ deleted: true }).sort({ createdAt: -1 });
+    res.status(200).json(deletedPosts);
+  } catch (err) {
+    res.status(500).json({ error: 'Error fetching deleted posts: ' + err.message });
+  }
+});
+
 
 export default router;
