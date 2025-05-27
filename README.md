@@ -21,7 +21,7 @@ mit CRUD funktionalität für einen Admin über ein Dashboard.
 
 ```bash
 git clone https://github.com/val-ntn/blog-backend-testing
-git clone https://github.com/yourusername/val-ntn/blog-frontend-testing
+git clone https://github.com/val-ntn/blog-frontend-testing
 ```
 
 
