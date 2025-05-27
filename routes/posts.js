@@ -148,15 +148,7 @@ router.delete('/hard/:id', verifyToken, requireRole('admin'), async (req, res) =
   }
 });
 
-// Get all soft-deleted posts - ADMIN ONLY
-router.get('/bin', verifyToken, requireRole('admin'), async (req, res) => {
-  try {
-    const deletedPosts = await Post.find({ deleted: true }).sort({ createdAt: -1 });
-    res.status(200).json(deletedPosts);
-  } catch (err) {
-    res.status(500).json({ error: 'Error fetching deleted posts: ' + err.message });
-  }
-});
+
 
 
 export default router;
