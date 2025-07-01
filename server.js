@@ -12,9 +12,13 @@ import dotenv from 'dotenv';
 import authRoutes from './routes/auth.js';
 import cookieParser from 'cookie-parser';
 import adminRoutes from './routes/admin.js';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import uploadRoutes from './routes/upload.js';
+import picturesRouter from'./routes/pictures.js';
 
-
-
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 // Load environment variables from .env file into process.env
 dotenv.config();
 
@@ -55,6 +59,8 @@ app.use('/api/posts', postRoutes);
 app.use('/api/admin', adminRoutes);
 
 
+
+app.use('/api/upload', uploadRoutes);
 // Connect to MongoDB using the connection string from environment variables
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('Connected to MongoDB'))  // Success message
@@ -64,7 +70,12 @@ mongoose.connect(process.env.MONGODB_URI)
 app.get('/', (req, res) => {
   res.send('Hello, this is your blog API!');
 });
+// Serve static files from uploads folder (so images are accessible)
+app.use('/api/uploads', express.static(path.join(__dirname, 'uploads')));
 
+
+// Register the pictures router with a prefix (e.g., /api/pictures)
+app.use('/api/pictures', picturesRouter);
 // Setup WebSocket connection listeners
 io.on('connection', (socket) => {
   console.log('A user connected');  // Log when a user connects
