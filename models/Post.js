@@ -40,6 +40,8 @@ const postSchema = new mongoose.Schema({
   timestamps: true  // Automatically adds createdAt and updatedAt fields
 });
 
+postSchema.index({ deleted: 1, createdAt: -1 });
+
 // Export the Post model based on the schema
 export default mongoose.model('Post', postSchema);
 

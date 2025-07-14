@@ -50,5 +50,10 @@ const eventSchema = new mongoose.Schema({
   timestamps: true  // Automatically add createdAt and updatedAt fields
 });
 
+eventSchema.index({ deleted: 1, startDate: 1 });        // Filter active events and query by startDate (e.g., upcoming)
+eventSchema.index({ relatedPostId: 1 });                // If you query events by related posts
+eventSchema.index({ startDate: 1, endDate: 1 });        // For date range queries
+
+
 // Export the Event model based on the schema
 export default mongoose.model('Event', eventSchema);

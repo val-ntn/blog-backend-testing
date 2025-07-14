@@ -57,6 +57,15 @@ router.get('/bin', verifyToken, requireRole('admin'), async (req, res) => {
   }
 });
 
+router.get('/latest', async (req, res) => {
+  try {
+    const latestPost = await Post.findOne({ deleted: false }).sort({ createdAt: -1 });
+    res.status(200).json(latestPost);
+  } catch (err) {
+    res.status(500).json({ error: 'Error fetching latest post: ' + err.message });
+  }
+});
+
 // Get a single post by ID
 router.get('/:id', async (req, res) => {
   try {
@@ -74,6 +83,7 @@ router.get('/:id', async (req, res) => {
     res.status(500).json({ error: 'Error fetching post: ' + err.message });
   }
 });
+
 
 // Update a post by ID (PUT request)
 router.put('/:id', verifyToken, requireRole('admin'), async (req, res) => {
