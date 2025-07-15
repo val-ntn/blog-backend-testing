@@ -15,7 +15,7 @@ import adminRoutes from './routes/admin.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import uploadRoutes from './routes/upload.js';
-import picturesRouter from'./routes/pictures.js';
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -39,7 +39,7 @@ app.use(cookieParser());
 
 // Enable CORS for all origins (adjust in production for security)
 app.use(cors({
-  origin: 'http://localhost:5173',  // your React frontend URL
+  origin: ['http://localhost:5173', 'http://localhost:4173'], // your React frontend URL
   credentials: true,                // allow cookies with cross-origin requests
 }));
 
@@ -74,8 +74,6 @@ app.get('/', (req, res) => {
 app.use('/api/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
-// Register the pictures router with a prefix (e.g., /api/pictures)
-app.use('/api/pictures', picturesRouter);
 // Setup WebSocket connection listeners
 io.on('connection', (socket) => {
   console.log('A user connected');  // Log when a user connects

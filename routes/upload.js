@@ -1,5 +1,5 @@
 // routes/upload.js
-import express from 'express';
+/* import express from 'express';
 import multer from 'multer';
 import path from 'path';
 import { verifyToken, requireRole } from '../middleware/authMiddleware.js';
@@ -24,5 +24,29 @@ router.post('/', verifyToken, requireRole('admin'), upload.single('image'), (req
   const imagePath = `/uploads/${req.file.filename}`;
   res.status(200).json({ location: imagePath });
 });
+
+export default router; */
+
+
+// routes/upload.js
+import express from 'express';
+import { verifyToken, requireRole } from '../middleware/authMiddleware.js';
+import uploadMiddleware from '../middleware/uploadMiddleware.js';
+import {
+  uploadPicture,
+  listPictures,
+  deletePicture
+} from '../controllers/uploadController.js';
+
+const router = express.Router();
+
+// Upload image (admin only)
+router.post('/', verifyToken, requireRole('admin'), uploadMiddleware.single('image'), uploadPicture);
+
+// List uploaded images (admin only)
+router.get('/', verifyToken, requireRole('admin'), listPictures);
+
+// Delete image by name (admin only)
+router.delete('/:imageName', verifyToken, requireRole('admin'), deletePicture);
 
 export default router;

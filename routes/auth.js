@@ -1,4 +1,4 @@
-// routes/auth.js
+/* // routes/auth.js
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
@@ -60,4 +60,22 @@ router.get('/me', verifyToken, async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
+export default router; */
+
+// routes/auth.js
+
+import express from 'express';
+import {
+  login,
+  logout,
+  getMe
+} from '../controllers/authController.js';
+import { verifyToken } from '../middleware/authMiddleware.js';
+
+const router = express.Router();
+
+router.post('/login', login);
+router.post('/logout', logout);
+router.get('/me', verifyToken, getMe);
+
 export default router;

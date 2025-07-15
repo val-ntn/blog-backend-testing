@@ -1,4 +1,4 @@
-// routes/events.js
+/* // routes/events.js
 import express from 'express';
 import Event from '../models/Event.js';
 import { verifyToken, requireRole } from '../middleware/authMiddleware.js';
@@ -90,5 +90,48 @@ router.delete('/hard/:id', verifyToken, requireRole('admin'), async (req, res) =
     res.status(500).json({ error: 'Error permanently deleting event: ' + err.message });
   }
 });
+
+export default router;
+ */
+
+// routes/events.js
+import express from 'express';
+import { verifyToken, requireRole } from '../middleware/authMiddleware.js';
+import {
+  createEvent,
+  getEvents,
+  getDeletedEvents,
+  getEventById,
+  updateEvent,
+  softDeleteEvent,
+  restoreEvent,
+  hardDeleteEvent,
+} from '../controllers/eventController.js';
+
+const router = express.Router();
+
+// Admin: Create event
+router.post('/', verifyToken, requireRole('admin'), createEvent);
+
+// Public: Get all events
+router.get('/', getEvents);
+
+// Admin: Get deleted events
+router.get('/bin', verifyToken, requireRole('admin'), getDeletedEvents);
+
+// Public: Get one event
+router.get('/:id', getEventById);
+
+// Admin: Update event
+router.put('/:id', verifyToken, requireRole('admin'), updateEvent);
+
+// Admin: Soft delete
+router.delete('/:id', verifyToken, requireRole('admin'), softDeleteEvent);
+
+// Admin: Restore event
+router.patch('/restore/:id', verifyToken, requireRole('admin'), restoreEvent);
+
+// Admin: Hard delete
+router.delete('/hard/:id', verifyToken, requireRole('admin'), hardDeleteEvent);
 
 export default router;
