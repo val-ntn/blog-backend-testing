@@ -19,3 +19,6 @@ Thumbs.db
 
 # Package lock file (optional, if you don't want to commit it)
 package-lock.json
+
+# Uploaded files
+/uploads/
