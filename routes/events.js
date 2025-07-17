@@ -106,6 +106,7 @@ import {
   softDeleteEvent,
   restoreEvent,
   hardDeleteEvent,
+  getUpcomingEvents,
 } from '../controllers/eventController.js';
 
 const router = express.Router();
@@ -118,6 +119,9 @@ router.get('/', getEvents);
 
 // Admin: Get deleted events
 router.get('/bin', verifyToken, requireRole('admin'), getDeletedEvents);
+
+//Public: Get upcomming events
+router.get('/upcoming', getUpcomingEvents);
 
 // Public: Get one event
 router.get('/:id', getEventById);

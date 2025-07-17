@@ -1,4 +1,18 @@
+//backend/controllers/postController.js
 import Post from '../models/Post.js';
+import sanitizeHtml from 'sanitize-html';
+import htmlTruncate from 'html-truncate';
+
+// Helper function to sanitize TinyMCE HTML content
+function sanitizeContent(html) {
+  return sanitizeHtml(html, {
+    allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img']),
+    allowedAttributes: {
+      ...sanitizeHtml.defaults.allowedAttributes,
+      img: ['src', 'alt', 'title', 'width', 'height', 'style'],
+    },
+  });
+}
 
 // Create new post
 export const createPost = async (req, res) => {
@@ -6,7 +20,22 @@ export const createPost = async (req, res) => {
   if (!title || !content) return res.status(400).send("Title and content required");
 
   try {
-    const newPost = new Post({ title, content, author, category, tags, thumbnailURL, externalLinks });
+    // Sanitize content
+    const cleanContent = sanitizeContent(content);
+
+    // Generate excerpt (truncated HTML with ellipsis)
+    const excerpt = htmlTruncate(cleanContent, 300, { ellipsis: '...' });
+
+    const newPost = new Post({ 
+      title, 
+      content: cleanContent, 
+      excerpt, 
+      author, 
+      category, 
+      tags, 
+      thumbnailURL, 
+      externalLinks 
+    });
     await newPost.save();
     res.status(201).send(newPost);
   } catch (err) {
@@ -62,9 +91,13 @@ export const updatePost = async (req, res) => {
     const { title, content, author, category, tags, thumbnailURL, externalLinks } = req.body;
     if (!title || !content) return res.status(400).json({ error: 'Title and content are required' });
 
+    // Sanitize and excerpt only if content provided
+    const cleanContent = sanitizeContent(content);
+    const excerpt = htmlTruncate(cleanContent, 300, { ellipsis: '...' });
+
     const updatedPost = await Post.findByIdAndUpdate(
       req.params.id,
-      { title, content, author, category, tags, thumbnailURL, externalLinks },
+      { title, content: cleanContent, excerpt, author, category, tags, thumbnailURL, externalLinks },
       { new: true, runValidators: true }
     );
 

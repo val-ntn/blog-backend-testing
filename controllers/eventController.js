@@ -1,3 +1,5 @@
+//backend/controllers/eventController.js
+
 import Event from '../models/Event.js';
 
 export const createEvent = async (req, res) => {
@@ -75,5 +77,23 @@ export const hardDeleteEvent = async (req, res) => {
     res.status(200).json({ message: 'Event permanently deleted' });
   } catch (err) {
     res.status(500).json({ error: 'Error permanently deleting event: ' + err.message });
+  }
+};
+
+export const getUpcomingEvents = async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit) || 0; // default: no limit
+    const now = new Date();
+
+    const events = await Event.find({
+      startDate: { $gte: now },
+      deleted: false,
+    })
+      .sort({ startDate: 1 }) // soonest first
+      .limit(limit);
+
+    res.status(200).json(events);
+  } catch (err) {
+    res.status(500).json({ error: 'Error fetching upcoming events', details: err.message });
   }
 };
