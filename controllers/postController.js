@@ -16,26 +16,29 @@ function sanitizeContent(html) {
 
 // Create new post
 export const createPost = async (req, res) => {
-  const { title, content, author, category, tags, thumbnailURL, externalLinks } = req.body;
+  const { title, content, author, category, tags, thumbnailURL, externalLinks, excerpt } = req.body;
   if (!title || !content) return res.status(400).send("Title and content required");
 
   try {
     // Sanitize content
     const cleanContent = sanitizeContent(content);
 
-    // Generate excerpt (truncated HTML with ellipsis)
-    const excerpt = htmlTruncate(cleanContent, 300, { ellipsis: '...' });
+    // Use provided excerpt, or generate it
+    const cleanExcerpt = excerpt && excerpt.trim()
+      ? sanitizeHtml(excerpt, { allowedTags: [], allowedAttributes: {} }) // plain text only
+      : htmlTruncate(cleanContent, 300, { ellipsis: '...' });
 
     const newPost = new Post({ 
       title, 
       content: cleanContent, 
-      excerpt, 
+      excerpt: cleanExcerpt,
       author, 
       category, 
       tags, 
       thumbnailURL, 
       externalLinks 
     });
+    
     await newPost.save();
     res.status(201).send(newPost);
   } catch (err) {
@@ -87,6 +90,39 @@ export const getPostById = async (req, res) => {
 
 // Update post by ID
 export const updatePost = async (req, res) => {
+  const { title, content, author, category, tags, thumbnailURL, externalLinks, excerpt } = req.body;
+  if (!title || !content) return res.status(400).json({ error: 'Title and content are required' });
+
+  try {
+    const cleanContent = sanitizeContent(content);
+
+    const cleanExcerpt = excerpt && excerpt.trim()
+      ? sanitizeHtml(excerpt, { allowedTags: [], allowedAttributes: {} })
+      : htmlTruncate(cleanContent, 300, { ellipsis: '...' });
+
+    const updatedPost = await Post.findByIdAndUpdate(
+      req.params.id,
+      {
+        title,
+        content: cleanContent,
+        excerpt: cleanExcerpt,
+        author,
+        category,
+        tags,
+        thumbnailURL,
+        externalLinks
+      },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedPost) return res.status(404).json({ error: 'Post not found' });
+    res.status(200).json(updatedPost);
+  } catch (err) {
+    res.status(500).json({ error: 'Error updating post: ' + err.message });
+  }
+};
+
+/* export const updatePost = async (req, res) => {
   try {
     const { title, content, author, category, tags, thumbnailURL, externalLinks } = req.body;
     if (!title || !content) return res.status(400).json({ error: 'Title and content are required' });
@@ -107,7 +143,7 @@ export const updatePost = async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: 'Error updating post: ' + err.message });
   }
-};
+}; */
 
 // Soft delete post by ID
 export const softDeletePost = async (req, res) => {

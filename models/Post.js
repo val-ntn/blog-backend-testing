@@ -62,6 +62,8 @@ postSchema.pre('save', function (next) {
   }
   next();
 });
+
+//Possible to remove later, is a fallback for now
 postSchema.methods.getExcerpt = function (options = {}) {
   const stripHTML = html => html.replace(/<[^>]+>/g, '');
   const wordLimit = options.wordLimit || 40;
