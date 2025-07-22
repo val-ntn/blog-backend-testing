@@ -54,6 +54,17 @@ eventSchema.index({ deleted: 1, startDate: 1 });        // Filter active events 
 eventSchema.index({ relatedPostId: 1 });                // If you query events by related posts
 eventSchema.index({ startDate: 1, endDate: 1 });        // For date range queries
 
+// Inside eventSchema:
+eventSchema.virtual('report', {
+  ref: 'EventReport',
+  localField: '_id',
+  foreignField: 'event',
+  justOne: true
+});
+
+eventSchema.set('toObject', { virtuals: true });
+eventSchema.set('toJSON', { virtuals: true });
+
 
 // Export the Event model based on the schema
 export default mongoose.model('Event', eventSchema);

@@ -15,6 +15,19 @@ import adminRoutes from './routes/admin.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import uploadRoutes from './routes/upload.js';
+import eventReportRoutes from './routes/eventReports.js';
+
+
+// TODO: Implement rate limiting for sensitive routes (auth, uploads, etc.)
+// Purpose: Prevent brute-force attacks, abuse, and excessive API usage
+// Package to consider: express-rate-limit
+// Suggested usage:
+// import rateLimit from 'express-rate-limit';
+// const authLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 100 });
+// app.use('/api/auth', authLimiter);
+
+// NOTE: Skipped during MVP/demo phase to avoid risk of blocking dev/demo traffic.
+// Return to this after presentation.
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -37,6 +50,10 @@ app.use(express.json());
 // Parse cookies from incoming requests for easy access
 app.use(cookieParser());
 
+
+
+
+
 // Enable CORS for all origins (adjust in production for security)
 app.use(cors({
   origin: ['http://localhost:5173', 'http://localhost:4173'], // your React frontend URL
@@ -51,6 +68,9 @@ app.use('/api/users', userRoutes);
 
 // Mount event-related routes on /api/events path
 app.use('/api/events', eventRoutes);
+
+// Mount report-related routes on /api/event-reports path
+app.use('/api/event-reports', eventReportRoutes);
 
 // Mount post-related routes on /api/posts path
 app.use('/api/posts', postRoutes);
