@@ -16,6 +16,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import uploadRoutes from './routes/upload.js';
 import eventReportRoutes from './routes/eventReports.js';
+import carouselRoutes from './routes/carousels.js';
 
 
 // TODO: Implement rate limiting for sensitive routes (auth, uploads, etc.)
@@ -93,6 +94,8 @@ app.get('/', (req, res) => {
 // Serve static files from uploads folder (so images are accessible)
 app.use('/api/uploads', express.static(path.join(__dirname, 'uploads')));
 
+
+app.use('/api/carousels', carouselRoutes);
 
 // Setup WebSocket connection listeners
 io.on('connection', (socket) => {

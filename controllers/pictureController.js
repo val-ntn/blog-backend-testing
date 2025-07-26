@@ -1,7 +1,7 @@
-//backend/controllers/uploadController.js
+//backend/controllers/pictureController.js
 
-import path from 'path';
 import fs from 'fs';
+import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -18,8 +18,11 @@ export const uploadPicture = (req, res) => {
 export const listPictures = (req, res) => {
   fs.readdir(uploadDir, (err, files) => {
     if (err) return res.status(500).json({ message: 'Failed to list images' });
-    const images = files.filter(file => /\.(jpg|jpeg|png|gif|webp)$/i.test(file))
+
+    const images = files
+      .filter(file => /\.(jpg|jpeg|png|gif|webp)$/i.test(file))
       .map(name => ({ name }));
+
     res.json(images);
   });
 };

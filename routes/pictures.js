@@ -1,5 +1,6 @@
 //backend/routes/pictures.js
-import express from 'express';
+
+/* import express from 'express';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
@@ -62,3 +63,33 @@ router.delete('/:imageName', (req, res) => {
 
 export default router;
 
+ */
+
+//backend/routes/pictures.js
+
+import express from 'express';
+import multer from 'multer';
+import path from 'path';
+import { uploadPicture, listPictures, deletePicture } from '../controllers/pictureController.js';
+
+const router = express.Router();
+
+const uploadDir = path.resolve('backend/uploads');
+
+const storage = multer.diskStorage({
+  destination: (_, __, cb) => cb(null, uploadDir),
+  filename: (_, file, cb) => cb(null, Date.now() + path.extname(file.originalname))
+});
+
+const upload = multer({ storage });
+
+// Upload picture route
+router.post('/upload', upload.single('picture'), uploadPicture);
+
+// List all pictures route
+router.get('/', listPictures);
+
+// Delete picture route
+router.delete('/:imageName', deletePicture);
+
+export default router;

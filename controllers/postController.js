@@ -122,28 +122,6 @@ export const updatePost = async (req, res) => {
   }
 };
 
-/* export const updatePost = async (req, res) => {
-  try {
-    const { title, content, author, category, tags, thumbnailURL, externalLinks } = req.body;
-    if (!title || !content) return res.status(400).json({ error: 'Title and content are required' });
-
-    // Sanitize and excerpt only if content provided
-    const cleanContent = sanitizeContent(content);
-    const excerpt = htmlTruncate(cleanContent, 300, { ellipsis: '...' });
-
-    const updatedPost = await Post.findByIdAndUpdate(
-      req.params.id,
-      { title, content: cleanContent, excerpt, author, category, tags, thumbnailURL, externalLinks },
-      { new: true, runValidators: true }
-    );
-
-    if (!updatedPost) return res.status(404).json({ error: 'Post not found' });
-
-    res.status(200).json(updatedPost);
-  } catch (err) {
-    res.status(500).json({ error: 'Error updating post: ' + err.message });
-  }
-}; */
 
 // Soft delete post by ID
 export const softDeletePost = async (req, res) => {
