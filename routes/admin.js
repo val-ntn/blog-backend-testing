@@ -1,4 +1,4 @@
-// routes/admin.js
+// backend/routes/admin.js
 import express from 'express';
 import { verifyToken, requireRole } from '../middleware/authMiddleware.js';
 

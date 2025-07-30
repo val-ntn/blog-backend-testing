@@ -19,12 +19,16 @@ const router = express.Router();
 
 // Public routes
 router.get('/', getEventReports);         
-router.get('/latest', getLatestReport);         
+router.get('/latest', getLatestReport);    
+
+// Admin routes
+router.get('/bin', verifyToken, requireRole('admin'), getDeletedEventReports);
+
+// Public dynamic route
 router.get('/:id', getEventReportById);         
 
 // Admin routes
 router.post('/', verifyToken, requireRole('admin'), createEventReport);
-router.get('/bin', verifyToken, requireRole('admin'), getDeletedEventReports);
 router.patch('/restore/:id', verifyToken, requireRole('admin'), restoreEventReport);
 router.delete('/:id', verifyToken, requireRole('admin'), softDeleteEventReport);
 router.delete('/hard/:id', verifyToken, requireRole('admin'), hardDeleteEventReport);

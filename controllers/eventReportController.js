@@ -21,7 +21,7 @@ export const createEventReport = async (req, res) => {
 // Get all reports
 export const getEventReports = async (req, res) => {
   try {
-    const reports = await EventReport.find().populate('event', 'title startDate');
+    const reports = await EventReport.find({ deleted: false }).populate('event', 'title startDate');
     res.status(200).json(reports);
   } catch (err) {
     res.status(500).json({ error: 'Error fetching reports', details: err.message });

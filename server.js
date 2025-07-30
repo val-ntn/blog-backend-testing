@@ -1,5 +1,5 @@
-//server.js
-// Import necessary dependencies
+//backend/server.js
+
 import express from 'express';
 import mongoose from 'mongoose';
 import { Server as SocketIO } from 'socket.io';
