@@ -7,6 +7,7 @@ const eventReportSchema = new mongoose.Schema({
     ref: 'Event',
     required: true, // A report must belong to an event
   },
+  
   title: {
     type: String,
     required: true
@@ -24,7 +25,9 @@ const eventReportSchema = new mongoose.Schema({
   tags: [{ type: String }],
   thumbnailURL: { type: String },
   externalLinks: [{ type: String }],
-  deleted: { type: Boolean, default: false }
+  deleted: { type: Boolean, default: false },
+  deletedByEvent: { type: Boolean, default: false }
+
 }, {
   timestamps: true
 });
@@ -49,6 +52,19 @@ eventReportSchema.pre('save', function (next) {
     const plainText = this.content.replace(/<[^>]+>/g, '');
     this.excerpt = plainText.split(' ').slice(0, 40).join(' ') + '...';
   }
+  next();
+});
+
+eventReportSchema.pre('save', async function (next) {
+  const eventExists = await mongoose.model('Event').exists({
+    _id: this.event,
+    deleted: false,
+  });
+
+  if (!eventExists) {
+    return next(new Error('Associated event not found or is deleted'));
+  }
+
   next();
 });
 

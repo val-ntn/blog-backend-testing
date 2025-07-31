@@ -1,6 +1,8 @@
 //backend/controllers/eventController.js
 
 import Event from '../models/Event.js';
+import EventReport from '../models/EventReport.js';
+
 
 export const createEvent = async (req, res) => {
   try {
@@ -50,7 +52,7 @@ export const updateEvent = async (req, res) => {
   }
 };
 
-export const softDeleteEvent = async (req, res) => {
+/* export const softDeleteEvent = async (req, res) => {
   try {
     const deleted = await Event.findByIdAndUpdate(req.params.id, { deleted: true }, { new: true });
     if (!deleted) return res.status(404).json({ error: 'Event not found' });
@@ -58,9 +60,30 @@ export const softDeleteEvent = async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: 'Error deleting event', details: err.message });
   }
+}; */
+
+export const softDeleteEvent = async (req, res) => {
+  try {
+    const eventId = req.params.id;
+
+    // Soft-delete event
+    await Event.findByIdAndUpdate(eventId, { deleted: true });
+
+    // Soft-delete related reports
+ await EventReport.updateMany(
+  { event: eventId, deleted: false }, // only affect non-deleted reports
+  { deleted: true, deletedByEvent: true }
+);
+
+
+
+    res.status(200).json({ message: 'Event and related reports soft-deleted.' });
+  } catch (err) {
+    res.status(500).json({ error: 'Error deleting event', details: err.message });
+  }
 };
 
-export const restoreEvent = async (req, res) => {
+/* export const restoreEvent = async (req, res) => {
   try {
     const restored = await Event.findByIdAndUpdate(req.params.id, { deleted: false }, { new: true });
     if (!restored) return res.status(404).json({ error: 'Event not found' });
@@ -69,8 +92,36 @@ export const restoreEvent = async (req, res) => {
     res.status(500).json({ error: 'Error restoring event: ' + err.message });
   }
 };
+ */
+export const restoreEvent = async (req, res) => {
+  try {
+    const eventId = req.params.id;
 
-export const hardDeleteEvent = async (req, res) => {
+    // Restore the event
+    const restoredEvent = await Event.findByIdAndUpdate(
+      eventId,
+      { deleted: false },
+      { new: true }
+    );
+    if (!restoredEvent) {
+      return res.status(404).json({ error: 'Event not found' });
+    }
+
+    // Restore related reports
+    await EventReport.updateMany(
+  { event: eventId, deleted: true, deletedByEvent: true },
+  { deleted: false, deletedByEvent: false }
+);
+
+
+    res.status(200).json({ message: 'Event and related reports restored successfully.' });
+  } catch (err) {
+    res.status(500).json({ error: 'Error restoring event', details: err.message });
+  }
+};
+
+
+/* export const hardDeleteEvent = async (req, res) => {
   try {
     const result = await Event.findByIdAndDelete(req.params.id);
     if (!result) return res.status(404).json({ error: 'Event not found' });
@@ -79,6 +130,23 @@ export const hardDeleteEvent = async (req, res) => {
     res.status(500).json({ error: 'Error permanently deleting event: ' + err.message });
   }
 };
+ */
+export const hardDeleteEvent = async (req, res) => {
+  try {
+    const eventId = req.params.id;
+
+    // Hard-delete related reports first
+    await EventReport.deleteMany({ event: eventId });
+
+    // Then delete the event
+    await Event.findByIdAndDelete(eventId);
+
+    res.status(200).json({ message: 'Event and related reports permanently deleted.' });
+  } catch (err) {
+    res.status(500).json({ error: 'Error deleting event permanently', details: err.message });
+  }
+};
+
 
 export const getUpcomingEvents = async (req, res) => {
   try {

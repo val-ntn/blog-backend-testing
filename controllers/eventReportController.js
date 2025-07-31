@@ -4,7 +4,7 @@ import EventReport from '../models/EventReport.js';
 import Event from '../models/Event.js';
 
 // Create new report
-export const createEventReport = async (req, res) => {
+/* export const createEventReport = async (req, res) => {
   try {
     const report = new EventReport(req.body);
     const saved = await report.save();
@@ -16,7 +16,29 @@ export const createEventReport = async (req, res) => {
   } catch (err) {
     res.status(400).json({ error: 'Error creating report', details: err.message });
   }
+}; */
+
+
+// Create new report
+export const createEventReport = async (req, res) => {
+  try {
+    const { event: eventId } = req.body;
+
+    // Check if event exists and is not deleted
+    const event = await Event.findOne({ _id: eventId, deleted: false });
+    if (!event) {
+      return res.status(400).json({ error: 'Event does not exist or is deleted' });
+    }
+
+    const report = new EventReport(req.body);
+    const saved = await report.save();
+
+    res.status(201).json(saved);
+  } catch (err) {
+    res.status(400).json({ error: 'Error creating report', details: err.message });
+  }
 };
+
 
 // Get all reports
 export const getEventReports = async (req, res) => {
@@ -83,7 +105,7 @@ export const softDeleteEventReport = async (req, res) => {
   }
 };
 
-export const restoreEventReport = async (req, res) => {
+/* export const restoreEventReport = async (req, res) => {
   try {
     const restored = await EventReport.findByIdAndUpdate(req.params.id, { deleted: false }, { new: true });
     if (!restored) return res.status(404).json({ error: 'Report not found' });
@@ -91,7 +113,30 @@ export const restoreEventReport = async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: 'Error restoring report: ' + err.message });
   }
+}; */
+
+export const restoreEventReport = async (req, res) => {
+  try {
+    const report = await EventReport.findById(req.params.id);
+    if (!report) return res.status(404).json({ error: 'Report not found' });
+
+    // Check if the associated event exists and is not deleted
+    const event = await Event.findById(report.event);
+    if (!event || event.deleted) {
+      return res.status(400).json({ error: 'Cannot restore report: associated event is deleted or missing' });
+    }
+
+    // Proceed to restore the report
+    report.deleted = false;
+    report.deletedByEvent = false;
+    await report.save();
+
+    res.status(200).json({ message: 'Report restored successfully' });
+  } catch (err) {
+    res.status(500).json({ error: 'Error restoring report: ' + err.message });
+  }
 };
+
 
 export const getDeletedEventReports = async (req, res) => {
   try {
