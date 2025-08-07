@@ -38,10 +38,9 @@ export const createEventReport = async (req, res) => {
 // Get all reports
 export const getEventReports = async (req, res) => {
   try {
-    const reports = await EventReport.find({ deleted: false }).populate(
-      "event",
-      "title startDate"
-    );
+    const reports = await EventReport.find({ deleted: false })
+      .populate("event", "title startDate")
+      .populate("carousel");
     res.status(200).json(reports);
   } catch (err) {
     res
