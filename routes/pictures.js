@@ -67,7 +67,7 @@ export default router;
 
 //backend/routes/pictures.js
 
-import express from 'express';
+/* import express from 'express';
 import multer from 'multer';
 import path from 'path';
 import { uploadPicture, listPictures, deletePicture } from '../controllers/pictureController.js';
@@ -93,3 +93,4 @@ router.get('/', listPictures);
 router.delete('/:imageName', deletePicture);
 
 export default router;
+ */

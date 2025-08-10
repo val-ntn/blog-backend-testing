@@ -1,6 +1,6 @@
 //backend/controllers/pictureController.js
 
-import fs from 'fs';
+/* import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -36,3 +36,4 @@ export const deletePicture = (req, res) => {
     res.json({ message: 'Image deleted' });
   });
 };
+ */
