@@ -10,16 +10,6 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 //const uploadDir = path.join(__dirname, "../uploads");
 
-/* export const uploadPicture = (req, res) => {
-  if (!req.file) {
-    return res.status(400).json({ message: "No file uploaded" });
-  }
-  res.json({
-    filename: req.file.filename,
-    path: `/uploads/${req.file.filename}`,
-  });
-}; */
-
 export const uploadPicture = async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ message: "No file uploaded" });
@@ -44,15 +34,6 @@ export const uploadPicture = async (req, res) => {
   }
 };
 
-/* export const listPictures = (req, res) => {
-  fs.readdir(uploadDir, (err, files) => {
-    if (err) return res.status(500).json({ message: 'Failed to list images' });
-    const images = files.filter(file => /\.(jpg|jpeg|png|gif|webp)$/i.test(file))
-      .map(name => ({ name }));
-    res.json(images);
-  });
-}; */
-
 export const listPictures = async (req, res) => {
   try {
     // Find all images not marked as deleted
@@ -67,17 +48,6 @@ export const listPictures = async (req, res) => {
     res.status(500).json({ message: "Failed to list images" });
   }
 };
-
-/* export const deletePicture = (req, res) => {
-  const { imageName } = req.params;
-  const filepath = path.join(uploadDir, imageName);
-
-  fs.unlink(filepath, (err) => {
-    if (err) return res.status(500).json({ message: "Failed to delete image" });
-    res.json({ message: "Image deleted" });
-  });
-};
- */
 
 export const deletePicture = async (req, res) => {
   const { imageName } = req.params;
@@ -96,12 +66,6 @@ export const deletePicture = async (req, res) => {
 
     // Optionally: physically delete file from disk here (or keep for safety)
     // Uncomment below to physically delete:
-    /*
-    const filepath = path.join(uploadDir, imageName);
-    fs.unlink(filepath, (err) => {
-      if (err) console.error('Failed to delete file from disk:', err);
-    });
-    */
 
     res.json({ message: "Image soft deleted" });
   } catch (err) {

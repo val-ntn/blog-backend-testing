@@ -15,14 +15,7 @@ import {
 const router = express.Router();
 
 // Upload image (admin only)
-/* router.post(
-  "/",
-  verifyToken,
-  requireRole("admin"),
-  uploadMiddleware.single("image"),
-  uploadPicture
-);
- */
+
 router.post(
   "/images",
   verifyToken,
