@@ -34,9 +34,10 @@ const postSchema = new mongoose.Schema(
       type: Number,
       default: 0, // Number of views, default to 0
     },
-    thumbnailURL: {
+    thumbnail: {
       type: String, // URL string for a thumbnail image (optional)
     },
+    teaser: { type: String },
     deleted: {
       type: Boolean,
       default: false,
