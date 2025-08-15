@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 // Define the Post schema structure
 const postSchema = new mongoose.Schema(
   {
+    type: { type: String, default: "post" },
     title: {
       type: String,
       required: true, // Title is mandatory

@@ -27,6 +27,7 @@ export const createPost = async (req, res) => {
     externalLinks,
     excerpt,
     carousel,
+    teaser,
   } = req.body;
   if (!title || !content)
     return res.status(400).send("Title and content required");
@@ -58,6 +59,7 @@ export const createPost = async (req, res) => {
       thumbnail,
       externalLinks,
       carousel,
+      teaser,
     });
 
     await newPost.save();
@@ -137,6 +139,7 @@ export const updatePost = async (req, res) => {
     externalLinks,
     excerpt,
     carousel,
+    teaser,
   } = req.body;
   if (!title || !content)
     return res.status(400).json({ error: "Title and content are required" });
@@ -168,6 +171,7 @@ export const updatePost = async (req, res) => {
         thumbnail,
         externalLinks,
         carousel,
+        teaser,
       },
       { new: true, runValidators: true }
     );

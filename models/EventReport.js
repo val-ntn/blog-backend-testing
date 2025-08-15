@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 
 const eventReportSchema = new mongoose.Schema(
   {
+    type: { type: String, default: "report" },
     event: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Event",
