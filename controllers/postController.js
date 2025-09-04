@@ -77,7 +77,8 @@ export const getPosts = async (req, res) => {
   try {
     const posts = await Post.find({ deleted: false })
       .sort({ createdAt: -1 })
-      .populate("carousel");
+      .populate("carousel")
+      .populate("author", "name");
     res.status(200).json(posts);
   } catch (err) {
     res.status(500).json({ error: "Error fetching posts: " + err.message });
@@ -91,7 +92,8 @@ export const getDeletedPosts = async (req, res) => {
       .sort({
         createdAt: -1,
       })
-      .populate("carousel");
+      .populate("carousel")
+      .populate("author", "name");
     res.status(200).json(deletedPosts);
   } catch (err) {
     res
@@ -107,7 +109,8 @@ export const getLatestPost = async (req, res) => {
       .sort({
         createdAt: -1,
       })
-      .populate("carousel");
+      .populate("carousel")
+      .populate("author", "name");
     res.status(200).json(latestPost);
   } catch (err) {
     res
@@ -119,7 +122,9 @@ export const getLatestPost = async (req, res) => {
 // Get post by ID
 export const getPostById = async (req, res) => {
   try {
-    const post = await Post.findById(req.params.id).populate("carousel");
+    const post = await Post.findById(req.params.id)
+      .populate("carousel")
+      .populate("author", "name");
     if (!post) return res.status(404).json({ error: "Post not found" });
     res.status(200).json(post);
   } catch (err) {
